@@ -1,0 +1,162 @@
+{% extends "dashboard_base.html" %} {% block title %}User{% endblock %} {% block
+content %}
+<div class="container my-">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <button onclick="window.history.back()" class="btn btn-outline-primary">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
+    <button id="suspend-button" class="btn btn-danger">Suspend</button>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-body text-left">
+          <div class="profile-avatar">AN</div>
+          <h4>Abel Nigus</h4>
+          <p>Adiss Ababa University</p>
+          <p>Software Engineering</p>
+        </div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5>Contact</h5>
+          <p><strong>Email:</strong> abel.nigus@aait.edu.et</p>
+          <p><strong>Phone:</strong> +1 (675) 675-5756</p>
+          <p><strong>Location:</strong> Ethiopia</p>
+          <p><strong>Date of Birth:</strong> January 1, 2000</p>
+        </div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5>Address</h5>
+          <p><strong>Address:</strong> 123 Main St, Apt 4B</p>
+          <p><strong>City:</strong> Addis Ababa</p>
+          <p><strong>State:</strong> Addis Ababa</p>
+          <p><strong>Country:</strong> Ethiopia</p>
+        </div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5>Portfolio & Socials</h5>
+          <p><strong>LinkedIn:</strong> <a href="#">LinkedIn URL</a></p>
+          <p><strong>GitHub:</strong> <a href="#">GitHub URL</a></p>
+          <p>
+            <strong>Portfolio:</strong> <a href="#">https://abelnigus.com</a>
+          </p>
+        </div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5>Skills</h5>
+          <span class="badge bg-primary skill-badge">Python</span>
+          <span class="badge bg-primary skill-badge">JavaScript</span>
+          <span class="badge bg-primary skill-badge">TypeScript</span>
+          <span class="badge bg-primary skill-badge">DevOps</span>
+          <span class="badge bg-primary skill-badge">Django</span>
+          <span class="badge bg-primary skill-badge">MongoDB</span>
+          <span class="badge bg-primary skill-badge">Docker</span>
+          <span class="badge bg-primary skill-badge">GraphQL</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Information Section -->
+    <div class="col-md-8">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5>Resume</h5>
+          <p>
+            <a href="#">View Abel_Nigus_resume.pdf</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Work Experience Section -->
+      <h5 class="mb-3">Work Experience</h5>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h6>Full Stack Developer</h6>
+          <p>Yeab Future • Chicago, IL, USA</p>
+          <p>March 2023 - Present</p>
+          <p>I was working as a full stack developer.</p>
+        </div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h6>Software Engineer</h6>
+          <p>XYZ Solutions • Addis Ababa, Ethiopia</p>
+          <p>July 2021 - February 2023</p>
+          <p>
+            Developed and maintained web applications for clients in various
+            industries.
+          </p>
+        </div>
+      </div>
+
+      <!-- Education Section -->
+      <h5 class="mb-3">Education</h5>
+      <div class="card mb-4">
+        <div class="card-body">
+          <p>
+            <strong>Adiss Ababa University</strong><br />Bachelor's, Software
+            Engineering<br />June 2020 - June 2025
+          </p>
+        </div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-body">
+          <p>
+            <strong>High School XYZ</strong><br />High School Diploma<br />Graduated:
+            May 2020
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block styles %}
+<style>
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  .skill-badge {
+    margin: 0.2rem;
+  }
+</style>
+
+<script>
+  const user_id = window.location.pathname.split("/").pop(); // Get the user ID from the URL
+  const apiEndpoint = "{{ url_for('admin_user.single_user', user_id='10') }}";
+
+  function deleteUser() {
+    if (confirm("Are you sure you want to suspend this user?")) {
+      fetch(`/admin/api/users/${user_id}/suspend`, {
+        // Use user_id for the suspend request
+        method: "POST",
+      })
+        .then((response) => {
+          if (response.ok) {
+            alert("User has been suspended.");
+          } else {
+            alert("Failed to suspend the user.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error suspending user:", error);
+        });
+    }
+  }
+
+  document.getElementById("suspend-button").onclick = deleteUser;
+</script>
+
+{% endblock %}
