@@ -1,0 +1,109 @@
+{% extends "dashboard_base.html" %} {% block title %}User{% endblock %} {% block
+content %}
+<div class="container">
+  <div class="row mb-4 d-flex justify-content-between align-items-center">
+    <div class="col-auto">
+      <h3 class="m-0">Users</h3>
+    </div>
+    <div class="col-auto">
+      <input
+        type="text"
+        id="search-input"
+        class="form-control"
+        style="width: 300px"
+        placeholder="search user"
+        oninput="handleSearch()"
+      />
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Phone Number</th>
+          <th>Active Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="users-table-body">
+        <!-- User rows will be injected here by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Controls -->
+  <nav aria-label="Page navigation">
+    <ul class="pagination" id="pagination">
+      <!-- Pagination items will be injected here by JavaScript -->
+    </ul>
+  </nav>
+</div>
+
+<script>
+  const apiEndpoint = "{{url_for('admin_user.paginate_user')}}";
+  let currentPage = 1;
+  let searchQuery = "";
+
+  function fetchUsers(page = 1, query) {
+    fetch(`${apiEndpoint}?page=${page}&search=${encodeURIComponent(query)}`)
+      .then((response) => response.json())
+      .then((data) => {
+        renderUsers(data.users);
+        renderPagination(data.totalPages, data.currentPage);
+      })
+      .catch((error) => console.error("Error fetching users:", error));
+  }
+
+  function renderUsers(users) {
+    const usersTableBody = document.getElementById("users-table-body");
+    usersTableBody.innerHTML = "";
+    users.forEach((user, index) => {
+      const truncatedId =
+        user.id.length > 3 ? `${user.id.slice(0, 3)}...` : user.id;
+      usersTableBody.innerHTML += `
+        <tr>
+          <td>${truncatedId}</td>
+          <td>${user?.full_name}</td>
+          <td>${user?.email}</td>
+          <td>${user?.phone_number}</td>
+          <td>${user.active_status ? "Active" : "Inactive"}</td>
+          <td>
+            <a href="/admin/user/${
+              user.id
+            }" class="btn btn-sm btn-outline-primary">View</a>
+          </td>
+        </tr>
+      `;
+    });
+  }
+  function handleSearch() {
+    searchQuery = document.getElementById("search-input").value;
+    fetchUsers(1, searchQuery);
+  }
+
+  function renderPagination(totalPages, currentPage) {
+    const pagination = document.getElementById("pagination");
+    pagination.innerHTML = "";
+
+    for (let i = 1; i <= totalPages; i++) {
+      pagination.innerHTML += `
+        <li class="page-item ${i === currentPage ? "active" : ""}">
+          <div class="page-link" style="cursor: pointer;" onclick="goToPage(${i})">${i}</div>
+        </li>
+      `;
+    }
+  }
+
+  function goToPage(page) {
+    currentPage = page;
+    fetchUsers(page, searchQuery);
+  }
+
+  fetchUsers(currentPage, searchQuery);
+</script>
+{% endblock %}
